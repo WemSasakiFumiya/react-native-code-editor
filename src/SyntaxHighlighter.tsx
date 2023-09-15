@@ -65,6 +65,12 @@ export type SyntaxHighlighterStyleType = {
      * Do not use in production.
      */
     highlighterColor?: ColorValue;
+
+    /**
+     * Added new property.
+     * Use this property to determine the minimum width.
+     */
+    minWidth?: string | number;
 };
 
 export const SyntaxHighlighterSyntaxStyles = HLJSSyntaxStyles;
@@ -122,6 +128,7 @@ const SyntaxHighlighter = (props: PropsWithForwardRef): JSX.Element => {
         lineNumbersBackgroundColor = undefined,
         highlighterLineHeight = undefined,
         highlighterColor = undefined,
+        minWidth,
     } = addedStyle || {};
 
     // Only when line numbers are showing
@@ -183,14 +190,14 @@ const SyntaxHighlighter = (props: PropsWithForwardRef): JSX.Element => {
                 );
 
                 const lineNumberElement =
-                    key !== '0' || index >= nodes.length - 2 ? undefined : (
+                    key !== '0' || index >= nodes.length ? undefined : (
                         <Text
                             key={`$line.${index}`}
                             style={{
                                 position: 'absolute',
                                 top: 5,
                                 bottom: 0,
-                                paddingHorizontal: nodes.length - 2 < 100 ? 5 : 0,
+                                paddingHorizontal: nodes.length < 100 ? 5 : 0,
                                 textAlign: 'center',
                                 color: lineNumbersColor,
                                 fontFamily,
@@ -231,6 +238,7 @@ const SyntaxHighlighter = (props: PropsWithForwardRef): JSX.Element => {
                 style={[
                     stylesheet.hljs,
                     {
+                        minWidth,
                         width: '100%',
                         height: '100%',
                         backgroundColor: backgroundColor || stylesheet.hljs.background,
@@ -246,7 +254,7 @@ const SyntaxHighlighter = (props: PropsWithForwardRef): JSX.Element => {
                 scrollEnabled={scrollEnabled}
             >
                 {showLineNumbers && renderLineNumbersBackground()}
-                {renderNode(rows)}
+                {renderNode(rows.slice(0, rows.length - 2))}
             </ScrollView>
         );
     };
